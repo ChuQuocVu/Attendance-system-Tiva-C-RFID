@@ -41,8 +41,6 @@ unsigned char str[MAX_LEN];
 unsigned char card_id[CARD_LENGTH];
 char Buff[100];
 
-
-
 Mfrc522 Mfrc522(chipSelectPin, NRSTPD);
 
 void UARTGetBuffer(char *pBuff);
@@ -92,7 +90,9 @@ static void UART_ISR(void)
 void init_LEDs()
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+    GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_1 | GPIO_PIN_2);
 }
 
 void UARTSendData(unsigned char* buffer, int len)
@@ -116,7 +116,6 @@ void UARTSendData8bit(unsigned char* buffer, int len)
     }
 
 }
-
 
 void InitConsole(void)
 {
@@ -163,7 +162,7 @@ void InitSSI(){
 // ********************************************************** Main **************************************************************//
 
 int main(void)
-{
+    {
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
     IntMasterDisable();
@@ -200,7 +199,7 @@ int main(void)
             else UARTSendData8bit((unsigned char*)card_id, CARD_LENGTH);
 
             GPIOPinWrite(GPIO_PORTF_BASE, blueLED, blueLED);
-            SysCtlDelay(SysCtlClockGet()/200);
+            SysCtlDelay(SysCtlClockGet()/20);
             GPIOPinWrite(GPIO_PORTF_BASE, blueLED, 0);
             SysCtlDelay(SysCtlClockGet()/2); //Delay
             lcd_default();
@@ -250,6 +249,40 @@ void lcdPrintInformation(unsigned char* buffer, int len)
     // Display name
     lcd_gotoxy(1,0);
     lcd_puts(Buff);
+    SysCtlDelay(SysCtlClockGet()/5);
+
+    if(Buff[16] == 'A')
+    {
+        lcd_clear();
+        lcd_gotoxy(0,0);
+        lcd_puts("<<   Access   >>");
+
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_PIN_2);
+        SysCtlDelay(SysCtlClockGet()/10);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0);
+        SysCtlDelay(SysCtlClockGet()/20);
+
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_PIN_1);
+        SysCtlDelay(SysCtlClockGet()/2); //Delay
+        SysCtlDelay(SysCtlClockGet()/20);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, 0);
+    }
+    else if(Buff[16] == 'D')
+    {
+        lcd_clear();
+        lcd_gotoxy(0,0);
+        lcd_puts("<<   Denied   >>");
+        // Blink Led 2 times
+        for(int i = 0; i <= 1; i++)
+        {
+            GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_PIN_2);
+            SysCtlDelay(SysCtlClockGet()/20);
+            GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0);
+            SysCtlDelay(SysCtlClockGet()/20);
+        }
+        SysCtlDelay(SysCtlClockGet()/20);
+    }
+//    lcd_default();
 }
 
 void lcd_default()
@@ -257,6 +290,7 @@ void lcd_default()
     lcd_clear();
     lcd_gotoxy(0,0);
     lcd_puts("<< Scan ID Card!");
+    SysCtlDelay(SysCtlClockGet()/20);
 }
 
 
