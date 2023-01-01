@@ -258,7 +258,7 @@ void lcdPrintInformation(unsigned char* buffer, int len)
         lcd_puts("<<   Access   >>");
 
         GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_PIN_2);
-        SysCtlDelay(SysCtlClockGet()/10);
+        SysCtlDelay(SysCtlClockGet()/20);
         GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0);
         SysCtlDelay(SysCtlClockGet()/20);
 
