@@ -34,7 +34,7 @@
 	<variableList>
 		<variable>
 			<name>TIVAWARE</name>
-			<value>file:/D:/ti/TivaWare_C_Series-2.1.2.111</value>
+			<value>file:/C:/ti/TivaWare_C_Series-2.1.2.111</value>
 		</variable>
 	</variableList>
 </projectDescription>

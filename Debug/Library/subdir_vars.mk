@@ -31,7 +31,4 @@ C_DEPS__QUOTED += \
 CPP_DEPS__QUOTED += \
 "Library\Mfrc522.d" 
 
-CPP_SRCS__QUOTED += \
-"../Library/Mfrc522.cpp" 
-
 
